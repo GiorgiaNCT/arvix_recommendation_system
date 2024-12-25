@@ -8,3 +8,11 @@ venv/
 ENV/
 .idea/
 .vscode/
+.DS_Store
+.env
+.env.example
+.env.local
+.env.production
+.env.staging
+.env.test
+.env.development
