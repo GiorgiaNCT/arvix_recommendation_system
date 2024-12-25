@@ -1,0 +1,4 @@
+document, first_name, last_name, date_of_birth, place_of_birth, address, city, country, postal_code
+1234, Marco, Rossi, 10/02/1999, Italy, "Via Cola di Rienzo", Rome, Italy, 00189
+5678, Mario, Rossi, 10/02/1999, Italy, "Via Cola di Rienzo", Rome, Italy, 00189
+2534, Luigi, Rossi, 10/02/1999, Italy, "Via Cola di Rienzo", Rome, Italy, 00189
