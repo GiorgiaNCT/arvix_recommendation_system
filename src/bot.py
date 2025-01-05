@@ -4,6 +4,10 @@ from telegram.ext import ApplicationBuilder, ContextTypes, CommandHandler
 from telegram import Update
 from app.services.arxiv import ArxivService
 from app.models.schemas import SearchResponse
+from app.services.chatgpt import ChatGPTService
+
+OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY')
+chatgpt = ChatGPTService(api_key=OPENAI_API_KEY)
 
 # Command handler function
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -31,14 +35,24 @@ async def get_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
         
         if papers and len(papers) > 0:
             paper = papers[0]  # Get the first paper
+            paper_preprocessed_link = paper['link'].replace('abs', 'pdf')
+
+            # Get ChatGPT analysis
+            analysis = await chatgpt.generate_paper_insight(
+                paper['title'],
+                paper_preprocessed_link
+            )
+
             message = (
                 f"📚 *AI Paper Recommendation*\n\n"
                 f"*Title:* {paper['title']}\n"
                 f"*Authors:* {', '.join(author['name'] for author in paper['authors'])}\n"
                 f"*Published:* {paper['published']}\n"
-                f"*Summary:* {paper['summary'][:300]}...\n"
                 f"*Link:* {paper['link']}"
+                f"🤖 *ChatGPT Analysis:*\n{analysis}"
             )
+
+            
             await update.message.reply_text(message, parse_mode='Markdown')
         else:
             await update.message.reply_text("No papers found.")
