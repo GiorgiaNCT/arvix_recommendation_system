@@ -5,9 +5,13 @@ from telegram import Update
 from app.services.arxiv import ArxivService
 from app.models.schemas import SearchResponse
 from app.services.chatgpt import ChatGPTService
+from app.services.claude import ClaudeService
 
-OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY')
-chatgpt = ChatGPTService(api_key=OPENAI_API_KEY)
+#OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY')
+#chatgpt = ChatGPTService(api_key=OPENAI_API_KEY)
+
+ANTHROPIC_API_KEY = os.environ.get('ANTHROPIC_API_KEY')
+claude = ClaudeService(api_key=ANTHROPIC_API_KEY)
 
 # Command handler function
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -36,9 +40,16 @@ async def get_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
         if papers and len(papers) > 0:
             paper = papers[0]  # Get the first paper
             paper_preprocessed_link = paper['link'].replace('abs', 'pdf')
-
+            """
             # Get ChatGPT analysis
             analysis = await chatgpt.generate_paper_insight(
+                paper['title'],
+                paper_preprocessed_link
+            )
+            """
+
+            # Get Claude analysis instead of ChatGPT
+            analysis = await claude.generate_paper_insight(
                 paper['title'],
                 paper_preprocessed_link
             )
@@ -49,7 +60,7 @@ async def get_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 f"*Authors:* {', '.join(author['name'] for author in paper['authors'])}\n"
                 f"*Published:* {paper['published']}\n"
                 f"*Link:* {paper['link']}"
-                f"🤖 *ChatGPT Analysis:*\n{analysis}"
+                f"🤖 *Claude Analysis:*\n{analysis}"
             )
 
             
